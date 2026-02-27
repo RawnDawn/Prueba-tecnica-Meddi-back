@@ -61,4 +61,4 @@ taskSchema.index({ status: 1, updatedAt: -1 });
 // Seach by title
 taskSchema.index({ title: "text" });
 
-export const Task = model<ITask>("Task", taskSchema, "tasks");
+export const Task = model<ITask>("Task", taskSchema, "taskAngel");
