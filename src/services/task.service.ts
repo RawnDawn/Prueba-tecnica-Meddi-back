@@ -9,7 +9,7 @@ import { TaskPriority, TaskStatus } from "@/types/task.types";
  * @param limit default 10
  * @returns paginated tasks
  */
-export const findAllTasks = async (page = 1, limit = 10) => {
+export const findAll = async (page = 1, limit = 10) => {
     const skip = (page - 1) * limit;
 
     return await Task.find()
@@ -24,7 +24,7 @@ export const findAllTasks = async (page = 1, limit = 10) => {
  * @param limit default 10
  * @returns paginated tasks
  */
-export const getTasksByPriority = async (
+export const getByPriority = async (
     priority: TaskPriority,
     page = 1,
     limit = 10
@@ -44,7 +44,7 @@ export const getTasksByPriority = async (
  * @param limit default 10
  * @returns paginated tasks
  */
-export const getTasksByStatus = async (
+export const getByStatus = async (
     status: TaskStatus,
     page = 1,
     limit = 10
@@ -64,7 +64,7 @@ export const getTasksByStatus = async (
  * @param limit default 10
  * @returns paginated tasks
  */
-export const searchTasksByTitle = (
+export const searchByTitle = (
     text: string,
     page = 1,
     limit = 10
@@ -82,7 +82,7 @@ export const searchTasksByTitle = (
  * @returns referenced task
  * @throws NotFoundError when task does not exists
  */
-export const showTask = async (id: string) => {
+export const show = async (id: string) => {
     const task = await Task.findById(id);
 
     if (!task) {
@@ -97,7 +97,7 @@ export const showTask = async (id: string) => {
  * @param data with task info
  * @return created task
  */
-export const createTask = async (data: Partial<ITask>) => {
+export const create = async (data: Partial<ITask>) => {
     return await Task.create(data);
 }
 
@@ -107,8 +107,8 @@ export const createTask = async (data: Partial<ITask>) => {
  * @returns updated task
  * @throws NotFoundError when task does not exists
  */
-export const updateTask = async (data: Partial<ITask>) => {
-    const task = await Task.findByIdAndUpdate(data._id, data, { new: true });
+export const update = async (id: string, data: Partial<ITask>) => {
+    const task = await Task.findByIdAndUpdate(id, data, { new: true });
 
     if (!task) {
         throw new NotFoundError("Task not found");
@@ -123,7 +123,7 @@ export const updateTask = async (data: Partial<ITask>) => {
  * @returns deleted task
  * @throws NotFoundError when task does not exists
  */
-export const deleteTask = async (id: string) => {
+export const destroy = async (id: string) => {
     const task = await Task.findById(id);
 
     if (!task) {
@@ -140,7 +140,7 @@ export const deleteTask = async (id: string) => {
  * @returns updated task
  * @throws NotFoundError when task does not exists
  */
-export const markTaskAsDone = async (id: string) => {
+export const markAsDone = async (id: string) => {
     const task = await Task.findByIdAndUpdate(id, { status: TaskStatus.DONE }, { new: true });
 
     if (!task) {

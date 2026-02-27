@@ -1,9 +1,23 @@
 import { Request, Response, NextFunction } from "express";
+import mongoose from "mongoose";
 import { HttpStatus } from "@/utils/HttpStatus";
 
-// =====================================
-//          String Validation
-// =====================================
+/**
+ * Validate id param
+ * @param req 
+ * @param res 
+ * @returns 
+ */
+export const validateIdParam = (req: Request, res: Response) => {
+    const id = req.params.id as string;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+        res.status(HttpStatus.BAD_REQUEST).json({ error: "INVALID_ID" });
+        return null;
+    }
+
+    return id;
+};
 
 /**
  * Entire helper to validate string, created to avoid code smell
@@ -15,9 +29,10 @@ import { HttpStatus } from "@/utils/HttpStatus";
 export const validateStringField = (
     field: string,
     req: Request,
-    res: Response
+    res: Response,
+    source: "body" | "query" | "params" = "body"
 ): string | null => {
-    const value = req.body[field];
+    const value = req[source][field];
 
     if (typeof value !== "string" || value.trim().length === 0) {
         res.status(HttpStatus.BAD_REQUEST).json({
@@ -29,41 +44,33 @@ export const validateStringField = (
     return value.trim();
 };
 
-// =====================================
-//            Enum Validation
-// =====================================
-
 /**
  * Entire helper to validate enum
  * @param field from request
  * @param enumObj Enum object
  * @param req to get value from request
  * @param res to send error response
+ * @source where function will look for the variable
  * @returns enum value or null
  */
 export const validateEnumField = <T extends object>(
     field: string,
     enumObj: T,
     req: Request,
-    res: Response
+    res: Response,
+    source: "body" | "query" | "params" = "body"
 ): T[keyof T] | null => {
-    const value = req.body[field];
+    const value = req[source][field];
 
-    // Validate as string
     if (typeof value !== "string") {
-        res.status(HttpStatus.BAD_REQUEST).json({
-            error: `${field.toUpperCase()}_IS_REQUIRED`
-        });
+        res.status(400).json({ error: `${field.toUpperCase()}_IS_REQUIRED` });
         return null;
     }
 
     const sanitized = value.trim();
 
-    // Validate if value is present on the generic object
     if (!Object.values(enumObj).includes(sanitized)) {
-        res.status(HttpStatus.BAD_REQUEST).json({
-            error: `INVALID_${field.toUpperCase()}`
-        });
+        res.status(400).json({ error: `INVALID_${field.toUpperCase()}` });
         return null;
     }
 
