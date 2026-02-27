@@ -4,15 +4,6 @@ import { ITask } from "@/models/task.model";
 import { TaskPriority, TaskStatus } from "@/types/task.types";
 
 /**
- * Create a new task
- * @param data with task info
- * @return created task
- */
-export const createTask = async (data: Partial<ITask>) => {
-    return await Task.create(data);
-}
-
-/**
  * Get all task using pagination
  * @param page default 1
  * @param limit default 10
@@ -100,6 +91,15 @@ export const showTask = async (id: string) => {
 
     return task;
 };
+
+/**
+ * Create a new task
+ * @param data with task info
+ * @return created task
+ */
+export const createTask = async (data: Partial<ITask>) => {
+    return await Task.create(data);
+}
 
 /**
  * Update a task passin Partial info
