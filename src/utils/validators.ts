@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
-import { HttpStatus } from "@/utils/HttpStatus";
+import { HttpStatus } from "@/utils/httpStatus";
 
 /**
  * Validate id param

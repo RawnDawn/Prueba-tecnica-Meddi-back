@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as TaskService from "@/services/task.service";
 import { NotFoundError } from "@/errors/NotFoundError";
-import { HttpStatus } from "@/utils/HttpStatus";
+import { HttpStatus } from "@/utils/httpStatus";
 import { TaskPriority, TaskStatus } from "@/types/task.types";
 
 export const indexTasks = async (req: Request, res: Response) => {
