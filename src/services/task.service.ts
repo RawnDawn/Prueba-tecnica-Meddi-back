@@ -1,4 +1,5 @@
 import { NotFoundError } from "@/errors/NotFoundError";
+import { BadRequestError } from "@/errors/BadRequestError";
 import { Task } from "@/models/task.model";
 import { ITask } from "@/models/task.model";
 import { TaskPriority, TaskStatus } from "@/types/task.types";
@@ -86,7 +87,7 @@ export const show = async (id: string) => {
     const task = await Task.findById(id);
 
     if (!task) {
-        throw new NotFoundError("Task not found");
+        throw new NotFoundError("TASK_NOT_FOUND");
     }
 
     return task;
@@ -98,6 +99,17 @@ export const show = async (id: string) => {
  * @return created task
  */
 export const create = async (data: Partial<ITask>) => {
+    // TODO - change all exception errors into a key, like "DUE_DATE_LESS_THAN_NOW"
+    if (!data.dueDate) {
+        throw new BadRequestError("DUE_DATE_REQUIRED");
+    }
+
+    const dueDate = new Date(data.dueDate);
+
+    if (dueDate < new Date()) {
+        throw new BadRequestError("DUE_DATE_MUST_BE_GREATER_THAN_NOW");
+    }
+
     return await Task.create(data);
 }
 
@@ -110,8 +122,19 @@ export const create = async (data: Partial<ITask>) => {
 export const update = async (id: string, data: Partial<ITask>) => {
     const task = await Task.findByIdAndUpdate(id, data, { new: true });
 
+    if (!data.dueDate) {
+        throw new BadRequestError("DUE_DATE_REQUIRED");
+    }
+
+    const dueDate = new Date(data.dueDate);
+
+    if (dueDate < new Date()) {
+        throw new BadRequestError("DUE_DATE_MUST_BE_GREATER_THAN_NOW");
+    }
+
+
     if (!task) {
-        throw new NotFoundError("Task not found");
+        throw new NotFoundError("TASK_NOT_FOUND");
     }
 
     return task;
@@ -127,7 +150,7 @@ export const destroy = async (id: string) => {
     const task = await Task.findById(id);
 
     if (!task) {
-        throw new NotFoundError("Task not found");
+        throw new NotFoundError("TASK_NOT_FOUND");
     }
 
     await task.deleteOne();
@@ -144,7 +167,7 @@ export const markAsDone = async (id: string) => {
     const task = await Task.findByIdAndUpdate(id, { status: TaskStatus.DONE }, { new: true });
 
     if (!task) {
-        throw new NotFoundError("Task not found");
+        throw new NotFoundError("TASK_NOT_FOUND");
     }
 
     return task;

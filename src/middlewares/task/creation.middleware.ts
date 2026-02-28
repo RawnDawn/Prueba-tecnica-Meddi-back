@@ -18,8 +18,8 @@ export const validateTaskCreation = (req: Request, res: Response, next: NextFunc
     const priority = validateEnumField("priority", TaskPriority, req, res, "body");
     if (!priority) return;
 
-    const status = validateEnumField("status", TaskStatus, req, res, "body");
-    if (!status) return;
+    // const status = validateEnumField("status", TaskStatus, req, res, "body");
+    // if (!status) return;
 
     const dueDate = validateDateField("dueDate", req, res);
     if (!dueDate) return;
@@ -27,7 +27,7 @@ export const validateTaskCreation = (req: Request, res: Response, next: NextFunc
     req.body.title = title;
     req.body.description = description;
     req.body.priority = priority;
-    req.body.status = status;
+    // req.body.status = status;
     req.body.dueDate = dueDate;
 
     next();

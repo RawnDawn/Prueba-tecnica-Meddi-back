@@ -3,6 +3,7 @@ import * as TaskService from "@/services/task.service";
 import { NotFoundError } from "@/errors/NotFoundError";
 import { HttpStatus } from "@/utils/httpStatus";
 import { TaskPriority, TaskStatus } from "@/types/task.types";
+import { BadRequestError } from "@/errors/BadRequestError";
 
 export const getAllTasks = async (req: Request, res: Response) => {
     try {
@@ -19,7 +20,10 @@ export const getAllTasks = async (req: Request, res: Response) => {
             });
     } catch (error: any) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .json({ error: error.message });
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
     }
 }
 
@@ -40,7 +44,10 @@ export const getTasksByPriority = async (req: Request, res: Response) => {
             });
     } catch (error: any) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .json({ error: error.message });
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
     }
 }
 
@@ -61,7 +68,10 @@ export const getTasksByStatus = async (req: Request, res: Response) => {
             });
     } catch (error: any) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .json({ error: error.message });
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
     }
 }
 
@@ -82,7 +92,10 @@ export const getTasksByTitle = async (req: Request, res: Response) => {
             });
     } catch (error: any) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .json({ error: error.message });
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
     }
 }
 
@@ -100,11 +113,17 @@ export const getTaskById = async (req: Request, res: Response) => {
     } catch (error: any) {
         if (error instanceof NotFoundError) {
             return res.status(HttpStatus.NOT_FOUND)
-                .json({ error: error.message });
+                .json({
+                    error: error.message,
+                    status: HttpStatus.NOT_FOUND
+                });
         }
 
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .json({ error: error.message });
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
     }
 }
 
@@ -117,8 +136,19 @@ export const createTask = async (req: Request, res: Response) => {
                 status: HttpStatus.CREATED
             });
     } catch (error: any) {
+        if (error instanceof BadRequestError) {
+            return res.status(HttpStatus.BAD_REQUEST)
+                .json({
+                    error: error.message,
+                    status: HttpStatus.BAD_REQUEST
+                })
+        }
+
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .json({ error: error.message });
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
     }
 }
 
@@ -134,17 +164,32 @@ export const updateTask = async (req: Request, res: Response) => {
     } catch (error: any) {
         if (error instanceof NotFoundError) {
             return res.status(HttpStatus.NOT_FOUND)
-                .json({ error: error.message });
+                .json({
+                    error: error.message,
+                    status: HttpStatus.NOT_FOUND
+                });
+        }
+
+        if (error instanceof BadRequestError) {
+            return res.status(HttpStatus.BAD_REQUEST)
+                .json({
+                    error: error.message,
+                    status: HttpStatus.BAD_REQUEST
+                })
         }
 
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .json({ error: error.message });
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
     }
 }
 
 export const deleteTask = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
+        await TaskService.destroy(id);
         res.status(HttpStatus.NO_CONTENT)
             .json({
                 status: HttpStatus.NO_CONTENT
@@ -152,11 +197,17 @@ export const deleteTask = async (req: Request, res: Response) => {
     } catch (error: any) {
         if (error instanceof NotFoundError) {
             return res.status(HttpStatus.NOT_FOUND)
-                .json({ error: error.message });
+                .json({
+                    error: error.message,
+                    status: HttpStatus.NOT_FOUND
+                });
         }
 
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .json({ error: error.message });
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
     }
 }
 
@@ -172,10 +223,16 @@ export const markTaskAsDone = async (req: Request, res: Response) => {
     } catch (error: any) {
         if (error instanceof NotFoundError) {
             return res.status(HttpStatus.NOT_FOUND)
-                .json({ error: error.message });
+                .json({
+                    error: error.message,
+                    message: HttpStatus.NOT_FOUND
+                });
         }
 
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .json({ error: error.message });
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
     }
 }

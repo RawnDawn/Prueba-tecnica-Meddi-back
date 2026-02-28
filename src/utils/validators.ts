@@ -12,7 +12,11 @@ export const validateIdParam = (req: Request, res: Response) => {
     const id = req.params.id as string;
 
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-        res.status(HttpStatus.BAD_REQUEST).json({ error: "INVALID_ID" });
+        res.status(HttpStatus.BAD_REQUEST)
+            .json({ 
+                error: "INVALID_ID",
+                status: HttpStatus.BAD_REQUEST
+            });
         return null;
     }
 
@@ -36,7 +40,8 @@ export const validateStringField = (
 
     if (typeof value !== "string" || value.trim().length === 0) {
         res.status(HttpStatus.BAD_REQUEST).json({
-            error: `${field.toUpperCase()}_IS_REQUIRED`
+            error: `${field.toUpperCase()}_IS_REQUIRED`,
+            status: HttpStatus.BAD_REQUEST
         });
         return null;
     }
@@ -63,14 +68,22 @@ export const validateEnumField = <T extends object>(
     const value = req[source][field];
 
     if (typeof value !== "string") {
-        res.status(400).json({ error: `${field.toUpperCase()}_IS_REQUIRED` });
+        res.status(400)
+        .json({ 
+            error: `${field.toUpperCase()}_IS_REQUIRED`,
+            status: HttpStatus.BAD_REQUEST
+         });
         return null;
     }
 
     const sanitized = value.trim();
 
     if (!Object.values(enumObj).includes(sanitized)) {
-        res.status(400).json({ error: `INVALID_${field.toUpperCase()}` });
+        res.status(400)
+        .json({ 
+            error: `INVALID_${field.toUpperCase()}`,
+            status: HttpStatus.BAD_REQUEST
+         });
         return null;
     }
 
@@ -94,7 +107,8 @@ export const validateDateField = (
 
     if (!value || typeof value !== "string") {
         res.status(HttpStatus.BAD_REQUEST).json({
-            error: `${field.toUpperCase()}_IS_REQUIRED`
+            error: `${field.toUpperCase()}_IS_REQUIRED`,
+            status: HttpStatus.BAD_REQUEST
         });
         return null;
     }
@@ -105,7 +119,8 @@ export const validateDateField = (
     // try accesing to Time, if is not a valid date is NaN
     if (isNaN(date.getTime())) {
         res.status(HttpStatus.BAD_REQUEST).json({
-            error: `INVALID_${field.toUpperCase()}`
+            error: `INVALID_${field.toUpperCase()}`,
+            status: HttpStatus.BAD_REQUEST
         });
         return null;
     }
