@@ -1,4 +1,5 @@
-import { TaskPriority, TaskStatus } from "@/types/task.types";
+import { DATE_IS_INVALID, DATE_IS_REQUIRED, DESCRIPTION_IS_REQUIRED, INVALID_PRIORITY, PRIORITY_IS_REQUIRED, TITLE_IS_REQUIRED } from "@/errors/taskErrorCodes";
+import { TaskPriority } from "@/types/task.types";
 import { validateDateField, validateEnumField, validateStringField } from "@/utils/validators";
 import { NextFunction, Request, Response } from "express";
 
@@ -9,19 +10,19 @@ import { NextFunction, Request, Response } from "express";
  * @param next to continue
  */
 export const validateTaskCreation = (req: Request, res: Response, next: NextFunction) => {
-    const title = validateStringField("title", req, res, "body");
+    const title = validateStringField("title", req, res, TITLE_IS_REQUIRED, "body");
     if (!title) return;
 
-    const description = validateStringField("description", req, res, "body");
+    const description = validateStringField("description", req, res, DESCRIPTION_IS_REQUIRED, "body");
     if (!description) return;
 
-    const priority = validateEnumField("priority", TaskPriority, req, res, "body");
+    const priority = validateEnumField("priority", TaskPriority, req, res, PRIORITY_IS_REQUIRED, INVALID_PRIORITY, "body");
     if (!priority) return;
 
     // const status = validateEnumField("status", TaskStatus, req, res, "body");
     // if (!status) return;
 
-    const dueDate = validateDateField("dueDate", req, res);
+    const dueDate = validateDateField("dueDate", req, res, DATE_IS_REQUIRED, DATE_IS_INVALID);
     if (!dueDate) return;
 
     req.body.title = title;

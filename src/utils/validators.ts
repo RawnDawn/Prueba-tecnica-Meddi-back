@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 import { HttpStatus } from "@/utils/httpStatus";
+import { INVALID_ID } from "@/errors/taskErrorCodes";
 
 /**
  * Validate id param
@@ -13,8 +14,8 @@ export const validateIdParam = (req: Request, res: Response) => {
 
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         res.status(HttpStatus.BAD_REQUEST)
-            .json({ 
-                error: "INVALID_ID",
+            .json({
+                error: INVALID_ID,
                 status: HttpStatus.BAD_REQUEST
             });
         return null;
@@ -34,13 +35,14 @@ export const validateStringField = (
     field: string,
     req: Request,
     res: Response,
-    source: "body" | "query" | "params" = "body"
+    error: string,
+    source: "body" | "query" | "params"
 ): string | null => {
     const value = req[source][field];
 
     if (typeof value !== "string" || value.trim().length === 0) {
         res.status(HttpStatus.BAD_REQUEST).json({
-            error: `${field.toUpperCase()}_IS_REQUIRED`,
+            error: error,
             status: HttpStatus.BAD_REQUEST
         });
         return null;
@@ -63,16 +65,18 @@ export const validateEnumField = <T extends object>(
     enumObj: T,
     req: Request,
     res: Response,
+    errorEmpty: string,
+    errorInvalid: string,
     source: "body" | "query" | "params" = "body"
 ): T[keyof T] | null => {
     const value = req[source][field];
 
     if (typeof value !== "string") {
         res.status(400)
-        .json({ 
-            error: `${field.toUpperCase()}_IS_REQUIRED`,
-            status: HttpStatus.BAD_REQUEST
-         });
+            .json({
+                error: errorEmpty,
+                status: HttpStatus.BAD_REQUEST
+            });
         return null;
     }
 
@@ -80,10 +84,10 @@ export const validateEnumField = <T extends object>(
 
     if (!Object.values(enumObj).includes(sanitized)) {
         res.status(400)
-        .json({ 
-            error: `INVALID_${field.toUpperCase()}`,
-            status: HttpStatus.BAD_REQUEST
-         });
+            .json({
+                error: errorInvalid,
+                status: HttpStatus.BAD_REQUEST
+            });
         return null;
     }
 
@@ -100,14 +104,16 @@ export const validateEnumField = <T extends object>(
 export const validateDateField = (
     field: string,
     req: Request,
-    res: Response
+    res: Response,
+    errorEmpty: string,
+    errorInvalid: string
 ): Date | null => {
     // Validate as string
     const value = req.body[field];
 
     if (!value || typeof value !== "string") {
         res.status(HttpStatus.BAD_REQUEST).json({
-            error: `${field.toUpperCase()}_IS_REQUIRED`,
+            error: errorEmpty,
             status: HttpStatus.BAD_REQUEST
         });
         return null;
@@ -119,7 +125,7 @@ export const validateDateField = (
     // try accesing to Time, if is not a valid date is NaN
     if (isNaN(date.getTime())) {
         res.status(HttpStatus.BAD_REQUEST).json({
-            error: `INVALID_${field.toUpperCase()}`,
+            error: errorInvalid,
             status: HttpStatus.BAD_REQUEST
         });
         return null;

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { validateEnumField, validateStringField } from "@/utils/validators";
 import { TaskPriority, TaskStatus } from "@/types/task.types";
+import { INVALID_PRIORITY, INVALID_STATUS, PRIORITY_IS_REQUIRED, STATUS_IS_REQUIRED, TITLE_IS_REQUIRED } from "@/errors/taskErrorCodes";
 
 /**
  * Validate task priority query filter
@@ -10,7 +11,7 @@ import { TaskPriority, TaskStatus } from "@/types/task.types";
  * @returns 
  */
 export const validateTaskPriorityQuery = (req: Request, res: Response, next: NextFunction) => {
-    const priority = validateEnumField("priority", TaskPriority, req, res, "query");
+    const priority = validateEnumField("priority", TaskPriority, req, res, PRIORITY_IS_REQUIRED, INVALID_PRIORITY, "query");
     if (!priority) return;
     req.query.priority = priority;
 
@@ -25,7 +26,7 @@ export const validateTaskPriorityQuery = (req: Request, res: Response, next: Nex
  * @returns 
  */
 export const validateTaskStatusQuery = (req: Request, res: Response, next: NextFunction) => {
-    const status = validateEnumField("status", TaskStatus, req, res, "query");
+    const status = validateEnumField("status", TaskStatus, req, res, STATUS_IS_REQUIRED, INVALID_STATUS, "query");
     if (!status) return;
     req.query.status = status;
 
@@ -40,7 +41,7 @@ export const validateTaskStatusQuery = (req: Request, res: Response, next: NextF
  * @returns 
  */
 export const validateTitleQuery = (req: Request, res: Response, next: NextFunction) => {
-    const title = validateStringField("title", req, res, "query");
+    const title = validateStringField("title", req, res, TITLE_IS_REQUIRED, "query");
     if (!title) return;
     req.query.title = title;
 
