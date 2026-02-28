@@ -122,16 +122,14 @@ export const create = async (data: Partial<ITask>) => {
 export const update = async (id: string, data: Partial<ITask>) => {
     const task = await Task.findByIdAndUpdate(id, data, { new: true });
 
-    if (!data.dueDate) {
-        throw new BadRequestError("DUE_DATE_REQUIRED");
+    // If due date is present, validate if is greater than now
+    if (data.dueDate) {
+        const dueDate = new Date(data.dueDate);
+
+        if (dueDate < new Date()) {
+            throw new BadRequestError("DUE_DATE_MUST_BE_GREATER_THAN_NOW");
+        }
     }
-
-    const dueDate = new Date(data.dueDate);
-
-    if (dueDate < new Date()) {
-        throw new BadRequestError("DUE_DATE_MUST_BE_GREATER_THAN_NOW");
-    }
-
 
     if (!task) {
         throw new NotFoundError("TASK_NOT_FOUND");
