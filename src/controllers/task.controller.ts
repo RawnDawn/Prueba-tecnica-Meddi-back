@@ -29,11 +29,11 @@ export const getAllTasks = async (req: Request, res: Response) => {
 
 export const getTasksByPriority = async (req: Request, res: Response) => {
     try {
-        const priority = req.params.priority;
+        const priority = req.query.priority as TaskPriority;
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
 
-        const tasks = await TaskService.getByPriority(priority as TaskPriority, page, limit);
+        const tasks = await TaskService.getByPriority(priority, page, limit);
         res.status(HttpStatus.OK)
             .json({
                 data: tasks,
@@ -53,11 +53,11 @@ export const getTasksByPriority = async (req: Request, res: Response) => {
 
 export const getTasksByStatus = async (req: Request, res: Response) => {
     try {
-        const status = req.params.status;
+        const status = req.query.status as TaskStatus;
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
 
-        const tasks = await TaskService.getByStatus(status as TaskStatus, page, limit);
+        const tasks = await TaskService.getByStatus(status, page, limit);
         res.status(HttpStatus.OK)
             .json({
                 data: tasks,

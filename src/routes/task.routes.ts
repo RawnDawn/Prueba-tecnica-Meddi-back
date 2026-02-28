@@ -12,48 +12,54 @@ import { Router } from "express";
 
 const router = Router();
 
-// CRUD 
-router.get("/",
-    validatePaginationQuery,
-    TaskController.getAllTasks);
-
-router.get("/:id",
-    validateTaskIdParam,
-    TaskController.getTaskById);
-
-router.post("/",
-    validateTaskCreation,
-    TaskController.createTask);
-
-router.put("/:id",
-    validateTaskIdParam,
-    validateTaskUpdate, TaskController.updateTask);
-
-router.delete("/:id",
-    validateTaskIdParam,
-    TaskController.deleteTask);
-
-// Filters
-
+// Filter
 // Use - /priority?priority=high
 router.get("/priority",
     validateTaskPriorityQuery,
     validatePaginationQuery,
     TaskController.getTasksByPriority
-)
+);
 
 // Use - /status?status=done
 router.get("/status",
     validateTaskStatusQuery,
     validatePaginationQuery,
     TaskController.getTasksByStatus
-)
+);
 
 // Use - /search?title=lorem
 router.get("/search",
     validateTitleQuery,
     validatePaginationQuery,
     TaskController.getTasksByTitle
-)
+);
+
+// Crud
+router.get("/",
+    validatePaginationQuery,
+    TaskController.getAllTasks
+);
+
+router.post("/",
+    validateTaskCreation,
+    TaskController.createTask
+);
+
+router.put("/:id",
+    validateTaskIdParam,
+    validateTaskUpdate,
+    TaskController.updateTask
+);
+
+router.delete("/:id",
+    validateTaskIdParam,
+    TaskController.deleteTask
+);
+
+router.get("/:id",
+    validateTaskIdParam,
+    TaskController.getTaskById
+);
+
 
 export default router;
