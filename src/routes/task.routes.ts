@@ -45,6 +45,11 @@ router.post("/",
     TaskController.createTask
 );
 
+router.put("/:id/done",
+    validateTaskIdParam,
+    TaskController.markTaskAsDone
+);
+
 router.put("/:id",
     validateTaskIdParam,
     validateTaskUpdate,

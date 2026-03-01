@@ -13,8 +13,11 @@ export const validateTaskCreation = (req: Request, res: Response, next: NextFunc
     const title = validateStringField("title", req, res, TITLE_IS_REQUIRED, "body");
     if (!title) return;
 
-    const description = validateStringField("description", req, res, DESCRIPTION_IS_REQUIRED, "body");
-    if (!description) return;
+    if (req.body.description !== undefined && req.body.description !== "") {
+        const description = validateStringField("description", req, res, DESCRIPTION_IS_REQUIRED, "body");
+        if (!description) return;
+        req.body.description = description;
+    }
 
     const priority = validateEnumField("priority", TaskPriority, req, res, PRIORITY_IS_REQUIRED, INVALID_PRIORITY, "body");
     if (!priority) return;
@@ -26,7 +29,6 @@ export const validateTaskCreation = (req: Request, res: Response, next: NextFunc
     if (!dueDate) return;
 
     req.body.title = title;
-    req.body.description = description;
     req.body.priority = priority;
     // req.body.status = status;
     req.body.dueDate = dueDate;
