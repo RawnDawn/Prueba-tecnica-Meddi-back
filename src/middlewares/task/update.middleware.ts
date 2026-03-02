@@ -21,7 +21,7 @@ export const validateTaskUpdate = (req: Request, res: Response, next: NextFuncti
         req.body.title = title;
     }
 
-    if (req.body.description !== undefined) {
+    if (req.body.description !== undefined && req.body.description !== "") {
         const description = validateStringField("description", req, res, DESCRIPTION_IS_REQUIRED, "body");
         if (!description) return;
         req.body.description = description;
