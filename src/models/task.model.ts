@@ -7,6 +7,7 @@ export interface ITask extends Document {
     priority: TaskPriority;
     status: TaskStatus;
     dueDate: Date;
+    completedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -15,7 +16,7 @@ const taskSchema = new Schema<ITask>(
     {
         title: {
             type: String,
-            requried: true,
+            required: true,
             trim: true
         },
         description: {
@@ -40,6 +41,11 @@ const taskSchema = new Schema<ITask>(
             type: Date,
             required: false,
             index: true
+        },
+        completedAt: {
+            type: Date,
+            required: false,
+            index: true
         }
     },
     {
@@ -47,18 +53,47 @@ const taskSchema = new Schema<ITask>(
     }
 )
 
-// Indexes
+// Triggers
+/**
+ * Set completedAt when task is marked as done/pending
+ */
+taskSchema.pre("save", function (next) {
+    if (this.isModified("status")) {
+        if (this.status === TaskStatus.DONE) {
+            this.completedAt = new Date()
+        } else {
+            this.completedAt = null
+        }
+    }
+})
 
+/**
+ * Set completedAt when task is marked as done/pending
+ */
+taskSchema.pre("findOneAndUpdate", function (next) {
+    const update = this.getUpdate() as any;
+
+    if (update.status === TaskStatus.DONE) {
+        update.completedAt = new Date();
+    } else if (update.status) {
+        update.completedAt = null;
+    }
+});
+
+// Indexes
 // Filter by prio and state
 taskSchema.index({ priority: 1, status: 1 });
 
 // Ranking by creation date
-taskSchema.index({ createcAt: -1 })
+taskSchema.index({ createdAt: -1 })
 
 // Raking by task done
 taskSchema.index({ status: 1, updatedAt: -1 });
 
 // Seach by title
 taskSchema.index({ title: "text" });
+
+// Ranking by completed date
+taskSchema.index({ completedAt: -1 });
 
 export const Task = model<ITask>("Task", taskSchema, "taskAngel");

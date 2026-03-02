@@ -29,14 +29,6 @@ export const getTotalPages = async (page = 1, limit = 10) => {
  * @param limit default 10
  * @returns paginated tasks
  */
-//? V1
-// export const findAll = async (page = 1, limit = 10) => {
-//     const skip = (page - 1) * limit;
-
-//     return await Task.find()
-//         .skip(skip)
-//         .limit(limit);
-// };
 export const findAll = async (page = 1, limit = 10, filters: TaskFilter = {}) => {
     const skip = (page - 1) * limit;
 
@@ -59,6 +51,7 @@ export const findAll = async (page = 1, limit = 10, filters: TaskFilter = {}) =>
  * @param page default 1
  * @param limit default 10
  * @returns paginated tasks
+ * @deprecated 
  */
 export const getByPriority = async (
     priority: TaskPriority,
@@ -79,6 +72,7 @@ export const getByPriority = async (
  * @param page default 1
  * @param limit default 10
  * @returns paginated tasks
+ * @deprecated 
  */
 export const getByStatus = async (
     status: TaskStatus,
@@ -99,6 +93,7 @@ export const getByStatus = async (
  * @param page default 1
  * @param limit default 10
  * @returns paginated tasks
+ * @deprecated 
  */
 export const searchByTitle = (
     text: string,
@@ -127,6 +122,41 @@ export const show = async (id: string) => {
 
     return task;
 };
+
+/**
+ * Get task count by priority
+ * @returns task count by priority
+ */
+export const getTaskCountByPriority = async () => {
+    const lowPrioTask = await Task.find({ priority: TaskPriority.LOW })
+        .countDocuments();
+    const mediumPrioTask = await Task.find({ priority: TaskPriority.MEDIUM })
+        .countDocuments();
+    const highPrioTask = await Task.find({ priority: TaskPriority.HIGH })
+        .countDocuments();
+
+    return {
+        [TaskPriority.LOW]: lowPrioTask,
+        [TaskPriority.MEDIUM]: mediumPrioTask,
+        [TaskPriority.HIGH]: highPrioTask
+    }
+}
+
+/**
+ * Get task count by status
+ * @returns task count by status
+ */
+export const getTaskCountByStatus = async () => {
+    const pendingTask = await Task.find({ status: TaskStatus.PENDING })
+        .countDocuments();
+    const doneTask = await Task.find({ status: TaskStatus.DONE })
+        .countDocuments();
+
+    return {
+        [TaskStatus.PENDING]: pendingTask,
+        [TaskStatus.DONE]: doneTask
+    }
+}
 
 /**
  * Create a new task
@@ -219,3 +249,5 @@ export const markAsPending = async (id: string) => {
 
     return task;
 }
+
+// export const getTopDays

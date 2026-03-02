@@ -36,31 +36,13 @@ export const getAllTasks = async (req: Request, res: Response) => {
     }
 };
 
-//? V1
-// export const getAllTasks = async (req: Request, res: Response) => {
-//     try {
-//         const page = parseInt(req.query.page as string) || 1;
-//         const limit = parseInt(req.query.limit as string) || 10;
-//         const tasks = await TaskService.findAll(page, limit);
-//         const totalPages = await TaskService.getTotalPages(page, limit);
-//         res.status(HttpStatus.OK)
-//             .json({
-//                 data: tasks,
-//                 status: HttpStatus.OK,
-//                 page,
-//                 limit,
-//                 total: tasks.length,
-//                 totalPages
-//             });
-//     } catch (error: any) {
-//         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//             .json({
-//                 error: error.message,
-//                 status: HttpStatus.INTERNAL_SERVER_ERROR
-//             });
-//     }
-// }
-
+/**
+ * Manage request and response to get tasks by priority
+ * @param req 
+ * @param res 
+ * @returns 
+ * @deprecated
+ */
 export const getTasksByPriority = async (req: Request, res: Response) => {
     try {
         const priority = req.query.priority as TaskPriority;
@@ -87,6 +69,13 @@ export const getTasksByPriority = async (req: Request, res: Response) => {
     }
 }
 
+/**
+ * Manage request and response to get tasks by status
+ * @param req 
+ * @param res 
+ * @returns 
+ * @deprecated
+ */
 export const getTasksByStatus = async (req: Request, res: Response) => {
     try {
         const status = req.query.status as TaskStatus;
@@ -113,6 +102,13 @@ export const getTasksByStatus = async (req: Request, res: Response) => {
     }
 }
 
+/**
+ * Manage request and response to get tasks by title
+ * @param req 
+ * @param res 
+ * @returns 
+ * @deprecated
+ */
 export const getTasksByTitle = async (req: Request, res: Response) => {
     try {
         const title = req.query.title as string;
@@ -138,6 +134,40 @@ export const getTasksByTitle = async (req: Request, res: Response) => {
             });
     }
 }
+
+export const getTaskCountByPriority = async (req: Request, res: Response) => {
+    try {
+        const taskCountByPriority = await TaskService.getTaskCountByPriority();
+        res.status(HttpStatus.OK)
+            .json({
+                data: taskCountByPriority,
+                status: HttpStatus.OK
+            });
+    } catch (error: any) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
+    }
+}
+
+export const getTaskCountByStatus = async (req: Request, res: Response) => {
+    try {
+        const taskCountByStatus = await TaskService.getTaskCountByStatus();
+        res.status(HttpStatus.OK)
+            .json({
+                data: taskCountByStatus,
+                status: HttpStatus.OK
+            });
+    } catch (error: any) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
+    }
+}   
 
 export const getTaskById = async (req: Request, res: Response) => {
     try {

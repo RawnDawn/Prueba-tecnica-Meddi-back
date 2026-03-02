@@ -37,12 +37,23 @@ const router = Router();
 // Crud
 router.get("/",
     validatePaginationQuery,
+    validateTaskPriorityQuery,
+    validateTaskStatusQuery,
+    validateTitleQuery,
     TaskController.getAllTasks
 );
 
 router.post("/",
     validateTaskCreation,
     TaskController.createTask
+);
+
+router.get("/count/priority",
+    TaskController.getTaskCountByPriority
+);
+
+router.get("/count/status",
+    TaskController.getTaskCountByStatus
 );
 
 router.put("/:id/done",

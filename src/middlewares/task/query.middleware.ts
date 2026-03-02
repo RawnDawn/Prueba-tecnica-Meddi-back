@@ -11,6 +11,10 @@ import { INVALID_PRIORITY, INVALID_STATUS, PRIORITY_IS_REQUIRED, STATUS_IS_REQUI
  * @returns 
  */
 export const validateTaskPriorityQuery = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.query.priority) {
+        return next();
+    }
+
     const priority = validateEnumField("priority", TaskPriority, req, res, PRIORITY_IS_REQUIRED, INVALID_PRIORITY, "query");
     if (!priority) return;
     req.query.priority = priority;
@@ -26,6 +30,10 @@ export const validateTaskPriorityQuery = (req: Request, res: Response, next: Nex
  * @returns 
  */
 export const validateTaskStatusQuery = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.query.status) {
+        return next();
+    }
+
     const status = validateEnumField("status", TaskStatus, req, res, STATUS_IS_REQUIRED, INVALID_STATUS, "query");
     if (!status) return;
     req.query.status = status;
@@ -41,6 +49,10 @@ export const validateTaskStatusQuery = (req: Request, res: Response, next: NextF
  * @returns 
  */
 export const validateTitleQuery = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.query.title) {
+        return next();
+    }
+
     const title = validateStringField("title", req, res, TITLE_IS_REQUIRED, "query");
     if (!title) return;
     req.query.title = title;
