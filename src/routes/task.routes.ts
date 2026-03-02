@@ -56,6 +56,14 @@ router.get("/count/status",
     TaskController.getTaskCountByStatus
 );
 
+router.get("/count/created/days",
+    TaskController.getTopCreatedDays
+);
+
+router.get("/count/completed/days",
+    TaskController.getTopCompletedDays
+);
+
 router.put("/:id/done",
     validateTaskIdParam,
     TaskController.markTaskAsDone

@@ -167,7 +167,7 @@ export const getTaskCountByStatus = async (req: Request, res: Response) => {
                 status: HttpStatus.INTERNAL_SERVER_ERROR
             });
     }
-}   
+}
 
 export const getTaskById = async (req: Request, res: Response) => {
     try {
@@ -325,6 +325,40 @@ export const markTaskAsPending = async (req: Request, res: Response) => {
                 });
         }
 
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
+    }
+}
+
+export const getTopCreatedDays = async (req: Request, res: Response) => {
+    try {
+        const topCreatedDays = await TaskService.getTopCreatedDays();
+        res.status(HttpStatus.OK)
+            .json({
+                data: topCreatedDays,
+                status: HttpStatus.OK
+            });
+    } catch (error: any) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
+    }
+}
+
+export const getTopCompletedDays = async (req: Request, res: Response) => {
+    try {
+        const topCompletedDays = await TaskService.getTopCompletedDays();
+        res.status(HttpStatus.OK)
+            .json({
+                data: topCompletedDays,
+                status: HttpStatus.OK
+            });
+    } catch (error: any) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .json({
                 error: error.message,

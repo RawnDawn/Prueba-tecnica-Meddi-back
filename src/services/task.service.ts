@@ -4,6 +4,7 @@ import { Task } from "@/models/task.model";
 import { ITask } from "@/models/task.model";
 import { TaskPriority, TaskStatus } from "@/types/task.types";
 import { TASK_NOT_FOUND, DUE_DATE_REQUIRED, DUE_DATE_MUST_BE_GREATER_THAN_NOW } from "@/errors/taskErrorCodes";
+import { daysMap } from "@/utils/mongoDaysMap";
 
 interface TaskFilter {
     priority?: string
@@ -250,4 +251,59 @@ export const markAsPending = async (id: string) => {
     return task;
 }
 
-// export const getTopDays
+/**
+ * Get days with more created tasks
+ * @returns 
+ */
+export async function getTopCreatedDays() {
+    const result = await Task.aggregate([
+        // Optimization
+        { $match: { createdAt: { $exists: true } } }, // only get documents with createdAt
+        // Get by index and only bring createdAt
+        { $project: { createdAt: 1, _id: 0 } },
+        {
+            $group: {
+                // Identifies day, converts into number
+                _id: { $dayOfWeek: "$createdAt" },
+                // For every task found, add 1 to the count
+                total: { $sum: 1 }
+            }
+        },
+
+        // Use sort first for optimization
+        { $sort: { total: -1 } },
+        { $limit: 3 }
+    ])
+
+    return result.map(d => ({
+        day: daysMap[d._id],
+        total: d.total
+    }))
+}
+
+/**
+ * Get days with more completed tasks
+ * @returns 
+ */
+export async function getTopCompletedDays() {
+    const result = await Task.aggregate([
+        // Optimization
+        { $match: { completedAt: { $ne: null } } },
+        // Get by index and only bring completedAt
+        { $project: { completedAt: 1, _id: 0 } },
+
+        {
+            $group: {
+                _id: { $dayOfWeek: "$completedAt" },
+                total: { $sum: 1 }
+            }
+        },
+        { $sort: { total: -1 } },
+        { $limit: 3 }
+    ])
+
+    return result.map(d => ({
+        day: daysMap[d._id],
+        total: d.total
+    }))
+}
