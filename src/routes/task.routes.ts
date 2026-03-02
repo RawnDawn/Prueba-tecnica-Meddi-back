@@ -14,25 +14,25 @@ const router = Router();
 
 // Filter
 // Use - /priority?priority=high
-router.get("/priority",
-    validateTaskPriorityQuery,
-    validatePaginationQuery,
-    TaskController.getTasksByPriority
-);
+// router.get("/priority",
+//     validateTaskPriorityQuery,
+//     validatePaginationQuery,
+//     TaskController.getTasksByPriority
+// );
 
 // Use - /status?status=done
-router.get("/status",
-    validateTaskStatusQuery,
-    validatePaginationQuery,
-    TaskController.getTasksByStatus
-);
+// router.get("/status",
+//     validateTaskStatusQuery,
+//     validatePaginationQuery,
+//     TaskController.getTasksByStatus
+// );
 
 // Use - /search?title=lorem
-router.get("/search",
-    validateTitleQuery,
-    validatePaginationQuery,
-    TaskController.getTasksByTitle
-);
+// router.get("/search",
+//     validateTitleQuery,
+//     validatePaginationQuery,
+//     TaskController.getTasksByTitle
+// );
 
 // Crud
 router.get("/",

@@ -9,25 +9,57 @@ export const getAllTasks = async (req: Request, res: Response) => {
     try {
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
-        const tasks = await TaskService.findAll(page, limit);
         const totalPages = await TaskService.getTotalPages(page, limit);
-        res.status(HttpStatus.OK)
-            .json({
-                data: tasks,
-                status: HttpStatus.OK,
-                page,
-                limit,
-                total: tasks.length,
-                totalPages
-            });
+
+        const filters = {
+            priority: req.query.priority as string,
+            status: req.query.status as string,
+            title: req.query.title as string,
+            dueDate: req.query.dueDate as string
+        };
+
+        const tasks = await TaskService.findAll(page, limit, filters);
+
+        res.status(HttpStatus.OK).json({
+            data: tasks,
+            status: HttpStatus.OK,
+            page,
+            limit,
+            total: tasks.length,
+            totalPages
+        });
     } catch (error: any) {
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .json({
-                error: error.message,
-                status: HttpStatus.INTERNAL_SERVER_ERROR
-            });
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            error: error.message,
+            status: HttpStatus.INTERNAL_SERVER_ERROR
+        });
     }
-}
+};
+
+//? V1
+// export const getAllTasks = async (req: Request, res: Response) => {
+//     try {
+//         const page = parseInt(req.query.page as string) || 1;
+//         const limit = parseInt(req.query.limit as string) || 10;
+//         const tasks = await TaskService.findAll(page, limit);
+//         const totalPages = await TaskService.getTotalPages(page, limit);
+//         res.status(HttpStatus.OK)
+//             .json({
+//                 data: tasks,
+//                 status: HttpStatus.OK,
+//                 page,
+//                 limit,
+//                 total: tasks.length,
+//                 totalPages
+//             });
+//     } catch (error: any) {
+//         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//             .json({
+//                 error: error.message,
+//                 status: HttpStatus.INTERNAL_SERVER_ERROR
+//             });
+//     }
+// }
 
 export const getTasksByPriority = async (req: Request, res: Response) => {
     try {

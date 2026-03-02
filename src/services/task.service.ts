@@ -5,6 +5,19 @@ import { ITask } from "@/models/task.model";
 import { TaskPriority, TaskStatus } from "@/types/task.types";
 import { TASK_NOT_FOUND, DUE_DATE_REQUIRED, DUE_DATE_MUST_BE_GREATER_THAN_NOW } from "@/errors/taskErrorCodes";
 
+interface TaskFilter {
+    priority?: string
+    status?: string
+    title?: string
+    dueDate?: string
+}
+
+/**
+ * Get total pages for a pagination
+ * @param page 
+ * @param limit 
+ * @returns 
+ */
 export const getTotalPages = async (page = 1, limit = 10) => {
     const totalTasks = await Task.countDocuments();
     return Math.ceil(totalTasks / limit);
@@ -16,10 +29,26 @@ export const getTotalPages = async (page = 1, limit = 10) => {
  * @param limit default 10
  * @returns paginated tasks
  */
-export const findAll = async (page = 1, limit = 10) => {
+//? V1
+// export const findAll = async (page = 1, limit = 10) => {
+//     const skip = (page - 1) * limit;
+
+//     return await Task.find()
+//         .skip(skip)
+//         .limit(limit);
+// };
+export const findAll = async (page = 1, limit = 10, filters: TaskFilter = {}) => {
     const skip = (page - 1) * limit;
 
-    return await Task.find()
+    const query: any = {};
+
+    // add filter to query
+    if (filters.priority) query.priority = filters.priority;
+    if (filters.status) query.status = filters.status;
+    if (filters.title) query.title = { $regex: filters.title, $options: 'i' }; // option to dont check mayus
+    if (filters.dueDate) query.dueDate = filters.dueDate;
+
+    return await Task.find(query)
         .skip(skip)
         .limit(limit);
 };
