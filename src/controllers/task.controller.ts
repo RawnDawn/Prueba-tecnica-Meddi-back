@@ -10,13 +10,15 @@ export const getAllTasks = async (req: Request, res: Response) => {
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
         const tasks = await TaskService.findAll(page, limit);
+        const totalPages = await TaskService.getTotalPages(page, limit);
         res.status(HttpStatus.OK)
             .json({
                 data: tasks,
                 status: HttpStatus.OK,
                 page,
                 limit,
-                total: tasks.length
+                total: tasks.length,
+                totalPages
             });
     } catch (error: any) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -32,15 +34,17 @@ export const getTasksByPriority = async (req: Request, res: Response) => {
         const priority = req.query.priority as TaskPriority;
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
-
         const tasks = await TaskService.getByPriority(priority, page, limit);
+        const totalPages = await TaskService.getTotalPages(page, limit);
+
         res.status(HttpStatus.OK)
             .json({
                 data: tasks,
                 status: HttpStatus.OK,
                 page,
                 limit,
-                total: tasks.length
+                total: tasks.length,
+                totalPages
             });
     } catch (error: any) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -56,15 +60,17 @@ export const getTasksByStatus = async (req: Request, res: Response) => {
         const status = req.query.status as TaskStatus;
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
-
         const tasks = await TaskService.getByStatus(status, page, limit);
+        const totalPages = await TaskService.getTotalPages(page, limit);
+
         res.status(HttpStatus.OK)
             .json({
                 data: tasks,
                 status: HttpStatus.OK,
                 page,
                 limit,
-                total: tasks.length
+                total: tasks.length,
+                totalPages
             });
     } catch (error: any) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -80,15 +86,17 @@ export const getTasksByTitle = async (req: Request, res: Response) => {
         const title = req.query.title as string;
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
-
         const tasks = await TaskService.searchByTitle(title, page, limit);
+        const totalPages = await TaskService.getTotalPages(page, limit);
+
         res.status(HttpStatus.OK)
             .json({
                 data: tasks,
                 status: HttpStatus.OK,
                 page,
                 limit,
-                total: tasks.length
+                total: tasks.length,
+                totalPages
             });
     } catch (error: any) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -215,6 +223,32 @@ export const markTaskAsDone = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
         const task = await TaskService.markAsDone(id);
+        res.status(HttpStatus.OK)
+            .json({
+                data: task,
+                status: HttpStatus.OK
+            });
+    } catch (error: any) {
+        if (error instanceof NotFoundError) {
+            return res.status(HttpStatus.NOT_FOUND)
+                .json({
+                    error: error.message,
+                    message: HttpStatus.NOT_FOUND
+                });
+        }
+
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .json({
+                error: error.message,
+                status: HttpStatus.INTERNAL_SERVER_ERROR
+            });
+    }
+}
+
+export const markTaskAsPending = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id as string;
+        const task = await TaskService.markAsPending(id);
         res.status(HttpStatus.OK)
             .json({
                 data: task,

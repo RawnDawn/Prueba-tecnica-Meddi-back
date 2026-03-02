@@ -50,6 +50,11 @@ router.put("/:id/done",
     TaskController.markTaskAsDone
 );
 
+router.put("/:id/pending",
+    validateTaskIdParam,
+    TaskController.markTaskAsPending
+);
+
 router.put("/:id",
     validateTaskIdParam,
     validateTaskUpdate,

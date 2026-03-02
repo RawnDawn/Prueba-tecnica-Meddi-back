@@ -5,6 +5,11 @@ import { ITask } from "@/models/task.model";
 import { TaskPriority, TaskStatus } from "@/types/task.types";
 import { TASK_NOT_FOUND, DUE_DATE_REQUIRED, DUE_DATE_MUST_BE_GREATER_THAN_NOW } from "@/errors/taskErrorCodes";
 
+export const getTotalPages = async (page = 1, limit = 10) => {
+    const totalTasks = await Task.countDocuments();
+    return Math.ceil(totalTasks / limit);
+}
+
 /**
  * Get all task using pagination
  * @param page default 1
@@ -163,6 +168,21 @@ export const destroy = async (id: string) => {
  */
 export const markAsDone = async (id: string) => {
     const task = await Task.findByIdAndUpdate(id, { status: TaskStatus.DONE }, { new: true });
+
+    if (!task) {
+        throw new NotFoundError(TASK_NOT_FOUND);
+    }
+
+    return task;
+}
+
+/**
+ * Mark a task as pending
+ * @param id 
+ * @returns 
+ */
+export const markAsPending = async (id: string) => {
+    const task = await Task.findByIdAndUpdate(id, { status: TaskStatus.PENDING }, { new: true });
 
     if (!task) {
         throw new NotFoundError(TASK_NOT_FOUND);
